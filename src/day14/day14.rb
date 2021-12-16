@@ -7,18 +7,22 @@ class Day14
     insertion_rules = {}
     input_array.each { |insertion_rule|
       insertion_rule_pair = insertion_rule.split(" -> ")
-      insertion_rules[insertion_rule_pair[0]] = insertion_rule_pair[1]
+      insertion_rules[insertion_rule_pair[0].bytes.join.to_i] = insertion_rule_pair[1].ord
+      # insertion_rules[insertion_rule_pair[0]] = insertion_rule_pair[1]
     }
     insertion_rules
   end
 
   def polymerize(polymer_template, insertion_rules)
-    polymer_elements = polymer_template.split("")
+    polymer_elements = polymer_template.bytes
+    # polymer_elements = polymer_template.split("")
     (0...NO_OF_ITERATIONS).each { |iteration|
+      puts "----------- Executing Iteration #{iteration}"
       polymerization_result = []
       no_of_polymer_elements = polymer_elements.length
       (0...(no_of_polymer_elements - 1)).each { |index|
-        insertion_element = insertion_rules["#{polymer_elements[index]}#{polymer_elements[index + 1]}"]
+        insertion_element = insertion_rules[polymer_elements[index..(index + 1)].join.to_i]
+        # insertion_element = insertion_rules["#{polymer_elements[index]}#{polymer_elements[index + 1]}"]
         insertion_position = index * 2
         polymerization_result[insertion_position] = polymer_elements[index]
         polymerization_result[insertion_position + 1] = insertion_element
@@ -30,7 +34,7 @@ class Day14
   end
 
   def compute
-    input_file_content = FileReader.new.read("day14.txt")
+    input_file_content = FileReader.new.read("day14_sample.txt")
     input_array = input_file_content.split("\n")
     polymer_template = input_array[0]
     insertion_rules = build_insertion_rules(input_array[2, input_array.size])
