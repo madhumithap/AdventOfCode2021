@@ -12,8 +12,7 @@ class Day14
     insertion_rules
   end
 
-  def polymerized_elements_count(polymer_template, insertion_rules)
-    elements_count = {}
+  def polymerize(polymer_template, insertion_rules)
     polymer_elements = polymer_template.split("")
     (0...NO_OF_ITERATIONS).each { |iteration|
       polymerization_result = []
@@ -23,15 +22,11 @@ class Day14
         insertion_position = index * 2
         polymerization_result[insertion_position] = polymer_elements[index]
         polymerization_result[insertion_position + 1] = insertion_element
-        if iteration == (NO_OF_ITERATIONS - 1)
-          elements_count = add_element(polymer_elements[index], elements_count)
-          elements_count = add_element(insertion_element, elements_count)
-        end
       }
       polymerization_result[(no_of_polymer_elements - 1) * 2] = polymer_elements[no_of_polymer_elements - 1]
       polymer_elements = polymerization_result
     }
-    add_element(polymer_elements[polymer_elements.length - 1], elements_count)
+    polymer_elements
   end
 
   def compute
@@ -39,16 +34,19 @@ class Day14
     input_array = input_file_content.split("\n")
     polymer_template = input_array[0]
     insertion_rules = build_insertion_rules(input_array[2, input_array.size])
-    elements_count = polymerized_elements_count(polymer_template, insertion_rules)
-    sorted_elements_count = elements_count.values.sort
+    polymerized_elements = polymerize(polymer_template, insertion_rules)
+    sorted_elements_count = get_sorted_elements_with_count(polymerized_elements)
     sorted_elements_count.last - sorted_elements_count.first
   end
 
   private
 
-  def add_element(element, hash)
-    hash[element] = hash.has_key?(element) ? hash[element] + 1 : 0
-    hash
+  def get_sorted_elements_with_count(polymerized_elements)
+    elements_count = {}
+    polymerized_elements.each { |element|
+      elements_count[element] = elements_count.has_key?(element) ? elements_count[element] + 1 : 0
+    }
+    elements_count.values.sort
   end
 end
 
