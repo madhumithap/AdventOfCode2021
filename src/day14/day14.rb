@@ -14,23 +14,24 @@ class Day14
 
   def polymerized_elements_count(polymer_template, insertion_rules)
     elements_count = {}
+    polymer_elements = polymer_template.split("")
     (0...NO_OF_ITERATIONS).each { |iteration|
-      polymerization_result = ""
-      polymer_elements = polymer_template.split("")
+      polymerization_result = []
       no_of_polymer_elements = polymer_elements.length
-      (0...(no_of_polymer_elements-1)).each { |index|
-        formula = "#{polymer_elements[index]}#{polymer_elements[index + 1]}"
-        insertion_element = insertion_rules[formula]
-        polymerization_result = "#{polymerization_result}#{polymer_elements[index]}#{insertion_element}"
-        if iteration == (NO_OF_ITERATIONS-1)
+      (0...(no_of_polymer_elements - 1)).each { |index|
+        insertion_element = insertion_rules["#{polymer_elements[index]}#{polymer_elements[index + 1]}"]
+        insertion_position = index * 2
+        polymerization_result[insertion_position] = polymer_elements[index]
+        polymerization_result[insertion_position + 1] = insertion_element
+        if iteration == (NO_OF_ITERATIONS - 1)
           elements_count = add_element(polymer_elements[index], elements_count)
           elements_count = add_element(insertion_element, elements_count)
         end
       }
-      last_element = polymer_template[-1, 1]
-      polymer_template = "#{polymerization_result}#{last_element}"
+      polymerization_result[(no_of_polymer_elements - 1) * 2] = polymer_elements[no_of_polymer_elements - 1]
+      polymer_elements = polymerization_result
     }
-    add_element(polymer_template[-1, 1], elements_count)
+    add_element(polymer_elements[polymer_elements.length - 1], elements_count)
   end
 
   def compute
