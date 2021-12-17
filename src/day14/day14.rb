@@ -22,13 +22,11 @@ class Day14
       elements_count[polymer_elements[index]] = value_of(polymer_elements[index], elements_count)
     }
     elements_count[polymer_elements[no_of_polymer_elements - 1]] = value_of(polymer_elements[no_of_polymer_elements - 1], elements_count)
-    puts pairwise_map
-    puts elements_count
     [pairwise_map, elements_count]
   end
 
-  def value_of(element, hash)
-    hash.has_key?(element) ? hash[element] + 1 : 1
+  def value_of(element, hash, count = 1)
+    hash.has_key?(element) ? hash[element] + count : count
   end
 
   def polymerize(polymer_template, insertion_rules)
@@ -38,18 +36,18 @@ class Day14
     elements_count = pairwise_map_with_count[1]
     (0...NO_OF_ITERATIONS).each { |iteration|
       puts "---------- Executing Iteration #{iteration + 1}"
-      polymerized_map = {}
+      current_iteration_map = {}
       pairwise_map.each { |k, count|
         insertion_element = insertion_rules[k]
         elements = k.split("")
 
         first_polymer = "#{elements[0]}#{insertion_element}"
         second_polymer = "#{insertion_element}#{elements[1]}"
-        polymerized_map[first_polymer] = value_of(first_polymer, polymerized_map) + (count-1)
-        polymerized_map[second_polymer] = value_of(second_polymer, polymerized_map) + (count-1)
-        elements_count[insertion_element] = value_of(insertion_element, elements_count) + (count-1)
+        current_iteration_map[first_polymer] = value_of(first_polymer, current_iteration_map, count)
+        current_iteration_map[second_polymer] = value_of(second_polymer, current_iteration_map, count)
+        elements_count[insertion_element] = value_of(insertion_element, elements_count, count)
       }
-      pairwise_map = polymerized_map
+      pairwise_map = current_iteration_map
     }
     elements_count
   end
